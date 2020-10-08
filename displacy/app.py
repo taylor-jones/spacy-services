@@ -1,27 +1,31 @@
 # coding: utf8
 from __future__ import unicode_literals
+import threading
 
 import hug
 from hug_middleware_cors import CORSMiddleware
 import spacy
 
+MODELS = {}
 
-print("Loading...")
-MODELS = {
-    "en_core_web_sm": spacy.load("en_core_web_sm"),
-    "en_core_web_md": spacy.load("en_core_web_md"),
-    "en_core_web_lg": spacy.load("en_core_web_lg"),
-    "de_core_news_sm": spacy.load("de_core_news_sm"),
-    "es_core_news_sm": spacy.load("es_core_news_sm"),
-    "pt_core_news_sm": spacy.load("pt_core_news_sm"),
-    "fr_core_news_sm": spacy.load("fr_core_news_sm"),
-    "it_core_news_sm": spacy.load("it_core_news_sm"),
-    "nl_core_news_sm": spacy.load("nl_core_news_sm"),
-    "nb_core_news_sm": spacy.load("nb_core_news_sm"),
-    "lt_core_news_sm": spacy.load("lt_core_news_sm"),
-    'el_core_news_sm': spacy.load('el_core_news_sm'),
-}
-print("Loaded!")
+lock = threading.Lock()
+
+
+def load_model_once(model):
+
+    if not model in MODELS:
+        lock.acquire()
+        try:
+            if not model in MODELS:
+                        print("Loading model {}".format(model))
+                        MODELS[model] = spacy.load(model)
+                        print("Loaded model {}".format(model))
+            lock.release()
+        except:
+            lock.release()
+            raise
+
+    return MODELS[model]
 
 
 def get_model_desc(nlp, model_name):
@@ -48,7 +52,7 @@ def dep(
     collapse_phrases: bool = False,
 ):
     """Get dependencies for displaCy visualizer."""
-    nlp = MODELS[model]
+    nlp = load_model_once(model)
     doc = nlp(text)
     options = {
         "collapse_punct": collapse_punctuation,
@@ -60,7 +64,7 @@ def dep(
 @hug.post("/ent")
 def ent(text: str, model: str):
     """Get entities for displaCy ENT visualizer."""
-    nlp = MODELS[model]
+    nlp = load_model_once(model)
     doc = nlp(text)
     return [
         {"start": ent.start_char, "end": ent.end_char, "label": ent.label_}
@@ -68,10 +72,10 @@ def ent(text: str, model: str):
     ]
 
 
-@hug.post("/sents")
+@hug.post('/sents')
 def sents(text: str, model: str):
     """Get sentences from text by sentence segmentation."""
-    nlp = MODELS[model]
+    nlp = load_model_once(model)
     doc = nlp(text)
 
     return [sent.text
