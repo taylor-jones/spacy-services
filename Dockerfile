@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install --no-install-recommends --yes \
 
 RUN adduser --system --disabled-password spacy
 
+RUN pip3 install --upgrade pip
+
 COPY displacy /usr/lib/python3/dist-packages/spacy-services/displacy
 
 # install dependencies like SpaCy and language specific models
