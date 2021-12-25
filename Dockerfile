@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -10,8 +10,6 @@ RUN apt-get update && apt-get install --no-install-recommends --yes \
     && apt-get clean -y
 
 RUN adduser --system --disabled-password spacy
-
-RUN pip3 install --upgrade pip
 
 COPY displacy /usr/lib/python3/dist-packages/spacy-services/displacy
 
