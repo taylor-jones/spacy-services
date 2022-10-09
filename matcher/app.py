@@ -1,5 +1,6 @@
 # coding: utf8
 from __future__ import unicode_literals
+import os
 
 import hug
 from hug_middleware_cors import CORSMiddleware
@@ -7,7 +8,17 @@ import spacy
 from spacy.matcher import Matcher
 
 
-MODELS = {"en_core_web_sm": spacy.load("en_core_web_sm")}
+def load_spacy_model(model):
+    nlp = spacy.load(model)
+
+    spacy_max_length = os.getenv('SPACY_MAX_LENGTH')
+    if spacy_max_length is not None:
+        nlp.max_length = int(spacy_max_length)
+
+    return nlp
+
+
+MODELS = {"en_core_web_sm": load_spacy_model("en_core_web_sm")}
 
 
 def get_model_desc(nlp, model_name):

@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals
 import threading
+import os
 
 import hug
 from hug_middleware_cors import CORSMiddleware
@@ -13,17 +14,20 @@ lock = threading.Lock()
 
 def load_model_once(model):
 
-    if not model in MODELS:
-        lock.acquire()
-        try:
-            if not model in MODELS:
-                        print("Loading model {}".format(model))
-                        MODELS[model] = spacy.load(model)
-                        print("Loaded model {}".format(model))
-            lock.release()
-        except:
-            lock.release()
-            raise
+    if model not in MODELS:
+        with lock:
+            if model not in MODELS:
+                print("Loading model {}".format(model))
+
+                nlp = spacy.load(model)
+
+                spacy_max_length = os.getenv('SPACY_MAX_LENGTH')
+                if spacy_max_length is not None:
+                    nlp.max_length = int(spacy_max_length)
+
+                MODELS[model] = nlp
+
+                print("Loaded model {}".format(model))
 
     return MODELS[model]
 
