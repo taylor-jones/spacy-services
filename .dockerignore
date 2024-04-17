@@ -1,0 +1,8 @@
+.git
+*.swp
+.DS_STORE
+*.md
+.venv
+venv
+.egg-info
+__pycache__
