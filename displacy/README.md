@@ -25,9 +25,7 @@ name.
 
 ```json
 {
-    "en_core_web_sm": "English - en_core_web_sm (v2.0.0)",
-    "de_core_news_sm": "German - de_core_news_sm (v2.0.0)",
-    "es_core_news_sm": "Spanish - es_core_news_sm (v2.0.0)"
+    "en_core_web_sm": "English - en_core_web_sm (v2.0.0)"
 }
 ```
 

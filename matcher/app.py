@@ -18,7 +18,7 @@ def load_spacy_model(model):
     return nlp
 
 
-MODELS = {"en_core_web_sm": load_spacy_model("en_core_web_sm")}
+MODELS = {"en_core_web_lg": load_spacy_model("en_core_web_lg")}
 
 
 def get_model_desc(nlp, model_name):
